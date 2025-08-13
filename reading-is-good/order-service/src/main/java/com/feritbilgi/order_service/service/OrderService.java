@@ -54,7 +54,11 @@ public class OrderService {
         order.setCreatedAt(LocalDateTime.now());
         
         orderRepository.save(order);
-        log.info("Order {} is saved", order.getOrderNumber());
+        
+        // Update inventory - reduce stock after order is saved
+        updateInventoryStock(orderLineItems);
+        
+        log.info("Order {} is saved and inventory updated", order.getOrderNumber());
         return "Order placed successfully";
     }
 
@@ -155,5 +159,30 @@ public class OrderService {
 
         
         log.info("Inventory check completed for order items");
+    }
+    
+    private void updateInventoryStock(List<OrderLineItems> orderLineItems) {
+        log.info("Updating inventory stock for order items");
+        
+        Span inventoryUpdateSpan = tracer.nextSpan().name("InventoryUpdate");
+        
+        try (Tracer.SpanInScope spanInScope = tracer.withSpan(inventoryUpdateSpan.start())) {
+            for (OrderLineItems orderItem : orderLineItems) {
+                // Call inventory service to reduce stock
+                webClientBuilder.build()
+                    .put()
+                    .uri("http://inventory-service/api/inventory/{skuCode}?quantity={quantity}", 
+                         orderItem.getSkuCode(), orderItem.getQuantity())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+                
+                log.info("Reduced stock for SKU: {} by quantity: {}", orderItem.getSkuCode(), orderItem.getQuantity());
+            }
+        } finally {
+            inventoryUpdateSpan.end();
+        }
+        
+        log.info("Inventory stock update completed");
     }
 }

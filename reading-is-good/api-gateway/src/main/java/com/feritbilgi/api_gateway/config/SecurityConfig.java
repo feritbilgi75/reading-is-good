@@ -22,8 +22,8 @@ public class SecurityConfig {
                                 .pathMatchers("/auth/**").permitAll() // Login/register endpoints are open
                                 .pathMatchers("/eureka/**").permitAll() // Eureka dashboard are open
                                 .pathMatchers("/actuator/**").permitAll() // Actuator endpoints are open for debugging
-                                .pathMatchers("/api/**").permitAll() // API endpoints are open for testing
-                                .anyExchange().permitAll() // other things are open for testing
+                                .pathMatchers("/api/**").authenticated() // API endpoints require authentication
+                                .anyExchange().authenticated() // other things require authentication
                 )
                 .oauth2ResourceServer(spec -> 
                         spec.jwt(jwt -> 
