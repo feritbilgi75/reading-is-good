@@ -20,6 +20,13 @@ public class Customer {
     private Long id;
     private String firstName;
     private String lastName;
+    
+    @Column(unique = true)
+    private String email;
+    
+    private String password;
+    private String keycloakId; // Keycloak'tan gelen user ID
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

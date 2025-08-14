@@ -12,6 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequest {
-    private Long customerId; // Müşteri ID'si eklendi
+    private Long customerId; // Will be set from JWT token
     private List<OrderLineItemsDto> orderLineItemsDtoList;
 }

@@ -7,6 +7,8 @@ import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,8 +26,11 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
     @TimeLimiter(name = "inventory")
-    public CompletableFuture<String> placeOrder(@RequestBody OrderRequest orderRequest) {
-        log.info("New order placed: {}", orderRequest);
+    public CompletableFuture<String> placeOrder(@RequestBody OrderRequest orderRequest, @AuthenticationPrincipal Jwt jwt) {
+        log.info("New order placed by customer: {}", jwt.getSubject());
+        // For now, use a default customer ID since JWT contains Keycloak UUID
+        // In production, you should map Keycloak user ID to customer ID
+        orderRequest.setCustomerId(1L); // Default customer ID
         return CompletableFuture.supplyAsync(() -> orderService.placeOrder(orderRequest));
     }
 
@@ -40,9 +45,10 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
-    @GetMapping("/customer/{customerId}")
+    @GetMapping("/customer/my-orders")
     @ResponseStatus(HttpStatus.OK)
-    public List<com.feritbilgi.order_service.model.Order> getOrdersByCustomerId(@PathVariable Long customerId) {
+    public List<com.feritbilgi.order_service.model.Order> getMyOrders(@AuthenticationPrincipal Jwt jwt) {
+        Long customerId = Long.valueOf(jwt.getSubject());
         log.info("Getting orders for customer: {}", customerId);
         return orderService.getOrdersByCustomerId(customerId);
     }

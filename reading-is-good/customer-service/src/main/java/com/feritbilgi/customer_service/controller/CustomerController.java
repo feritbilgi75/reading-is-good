@@ -1,5 +1,7 @@
 package com.feritbilgi.customer_service.controller;
 
+import com.feritbilgi.customer_service.dto.AuthRequest;
+import com.feritbilgi.customer_service.dto.AuthResponse;
 import com.feritbilgi.customer_service.dto.CustomerRequest;
 import com.feritbilgi.customer_service.dto.CustomerResponse;
 import com.feritbilgi.customer_service.service.CustomerService;
@@ -51,5 +53,19 @@ public class CustomerController {
     public void deleteCustomer(@PathVariable Long id) {
         log.info("Deleting customer with id: {}", id);
         customerService.deleteCustomer(id);
+    }
+
+    @PostMapping("/auth/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AuthResponse registerCustomer(@RequestBody CustomerRequest customerRequest) {
+        log.info("Customer registration request: {}", customerRequest.getEmail());
+        return customerService.registerCustomer(customerRequest);
+    }
+
+    @PostMapping("/auth/login")
+    @ResponseStatus(HttpStatus.OK)
+    public AuthResponse loginCustomer(@RequestBody AuthRequest authRequest) {
+        log.info("Customer login request: {}", authRequest.getEmail());
+        return customerService.loginCustomer(authRequest);
     }
 }
