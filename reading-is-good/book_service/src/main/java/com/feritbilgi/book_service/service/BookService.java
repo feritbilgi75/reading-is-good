@@ -4,6 +4,7 @@ import com.feritbilgi.book_service.dto.BookRequest;
 import com.feritbilgi.book_service.dto.BookResponse;
 import com.feritbilgi.book_service.model.Book;
 import com.feritbilgi.book_service.repository.BookRepository;
+import com.feritbilgi.shared.annotation.LogOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class BookService {
 */
 
 
+    @LogOperation(operation = "BOOK_CREATED", description = "Yeni kitap oluşturuldu")
     public void createBook(BookRequest bookRequest){
         Book book = Book.builder()
                 .title(bookRequest.getTitle())
@@ -39,6 +41,7 @@ public class BookService {
         log.info("Book {} is saved", book.getId());
     }
 
+    @LogOperation(operation = "BOOKS_RETRIEVED", description = "Tüm kitaplar getirildi")
     public List<BookResponse> getAllBooks() {
         List<Book> books = bookRepository.findAll();
         return books.stream().map(this::mapToBookResponse).toList(); //After we mapped it, we need to collect them into a list.

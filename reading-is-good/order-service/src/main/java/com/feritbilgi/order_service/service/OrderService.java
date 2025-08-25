@@ -7,6 +7,7 @@ import com.feritbilgi.order_service.model.Order;
 import com.feritbilgi.order_service.model.OrderLineItems;
 import com.feritbilgi.order_service.model.OrderStatus;
 import com.feritbilgi.order_service.repository.OrderRepository;
+import com.feritbilgi.shared.annotation.LogOperation;
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class OrderService {
     private final WebClient.Builder webClientBuilder;
     private final Tracer tracer;
 
+    @LogOperation(operation = "ORDER_CREATED", description = "Yeni sipariş oluşturuldu", sendSms = true, smsTemplate = "ORDER_CONFIRMATION")
     public String placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
         order.setOrderNumber(UUID.randomUUID().toString());
@@ -62,15 +64,18 @@ public class OrderService {
         return "Order placed successfully";
     }
 
+    @LogOperation(operation = "ORDERS_RETRIEVED", description = "Tüm siparişler getirildi")
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
 
+    @LogOperation(operation = "CUSTOMER_ORDERS_RETRIEVED", description = "Müşteri siparişleri getirildi")
     public List<Order> getOrdersByCustomerId(Long customerId) {
         log.info("Getting orders for customer: {}", customerId);
         return orderRepository.findByCustomerId(customerId);
     }
 
+    @LogOperation(operation = "ORDER_UPDATED", description = "Sipariş güncellendi")
     public String updateOrder(Long orderId, OrderRequest orderRequest) {
         log.info("Updating order with id: {}", orderId);
         

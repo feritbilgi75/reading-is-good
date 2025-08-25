@@ -65,6 +65,13 @@
             <groupId>io.zipkin.reporter2</groupId>
             <artifactId>zipkin-reporter-brave</artifactId>
         </dependency>
+
+        <!-- Shared Library for AOP Logging -->
+        <dependency>
+            <groupId>com.feritbilgi</groupId>
+            <artifactId>shared-library</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

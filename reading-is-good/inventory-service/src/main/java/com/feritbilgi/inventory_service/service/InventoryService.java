@@ -3,6 +3,7 @@ package com.feritbilgi.inventory_service.service;
 import com.feritbilgi.inventory_service.model.Inventory;
 import com.feritbilgi.inventory_service.model.InventoryStatus;
 import com.feritbilgi.inventory_service.repository.InventoryRepository;
+import com.feritbilgi.shared.annotation.LogOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class InventoryService {
 
     private final InventoryRepository inventoryRepository;
 
+    @LogOperation(operation = "INVENTORY_RETRIEVED", description = "Tüm envanter bilgileri getirildi")
     public List<Inventory> getAllInventory() {
         return inventoryRepository.findAll();
     }
@@ -52,6 +54,7 @@ public class InventoryService {
         return inventory != null && inventory.getQuantity() >= quantity;
     }
 
+    @LogOperation(operation = "INVENTORY_UPDATED", description = "Envanter stoku güncellendi")
     public void updateStock(String skuCode, int quantity) {
         Inventory inventory = inventoryRepository.findBySkuCode(skuCode)
                 .orElseThrow(() -> new RuntimeException("Inventory not found for skuCode: " + skuCode));

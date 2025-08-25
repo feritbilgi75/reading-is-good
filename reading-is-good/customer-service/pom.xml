@@ -68,6 +68,13 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-webflux</artifactId>
         </dependency>
+
+        <!-- Shared Library for AOP Logging -->
+        <dependency>
+            <groupId>com.feritbilgi</groupId>
+            <artifactId>shared-library</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
